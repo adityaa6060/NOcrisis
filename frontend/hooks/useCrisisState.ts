@@ -39,7 +39,7 @@ export function useCrisisState() {
 
   const isActive = crisis?.status === 'active';
   const respondingCount = Object.keys(respondingStaff).length;
-  const acksCount = Object.keys(guestAcks).length;
+  const acksCount = Object.values(guestAcks).filter((a: any) => !a.needsHelp).length;
   const helpRequests = Object.values(guestAcks).filter((a: any) => a.needsHelp).length;
 
   return {

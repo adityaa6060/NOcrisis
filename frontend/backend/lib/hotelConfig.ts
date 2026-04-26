@@ -54,6 +54,19 @@ export const hotelConfig = {
   },
 };
 
+export function getAvailableRooms(): string[] {
+  const rooms: string[] = [];
+  const roomsPerFloor = Math.floor(hotelConfig.totalRooms / hotelConfig.totalFloors);
+  
+  for (let floor = 1; floor <= hotelConfig.totalFloors; floor++) {
+    for (let i = 1; i <= roomsPerFloor; i++) {
+      rooms.push(`${floor}${i.toString().padStart(2, '0')}`);
+    }
+  }
+  
+  return rooms;
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // SMART SIMULATION — Context-aware crisis generation
 // ═══════════════════════════════════════════════════════════════════════════════

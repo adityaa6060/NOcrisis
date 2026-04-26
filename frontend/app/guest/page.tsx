@@ -7,6 +7,7 @@ import { useCrisisState } from '@frontend/hooks/useCrisisState';
 import { guestAcknowledge, guestNeedsHelp } from '@backend/lib/db';
 import { CRISIS_META } from '@backend/types';
 import ThemeToggle from '@frontend/components/shared/ThemeToggle';
+import { getAvailableRooms } from '@backend/lib/hotelConfig';
 
 function GuestContent() {
   const searchParams = useSearchParams();
@@ -101,13 +102,16 @@ function GuestContent() {
             <div className="space-y-6">
                <div>
                   <label className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] mb-3 block text-left">Your Room Number</label>
-                  <input 
-                    type="text" 
+                  <select 
                     value={roomNumber}
                     onChange={(e) => setRoomNumber(e.target.value)}
-                    placeholder="e.g. 204 or 501"
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-2xl font-bold focus:outline-none focus:border-blue-500 transition-all text-center"
-                  />
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-xl font-bold focus:outline-none focus:border-blue-500 transition-all text-center appearance-none cursor-pointer"
+                  >
+                    <option value="" disabled className="bg-gray-900 text-gray-500">Select your room...</option>
+                    {getAvailableRooms().map(room => (
+                      <option key={room} value={room} className="bg-gray-900 text-white">Room {room}</option>
+                    ))}
+                  </select>
                </div>
 
                <button 

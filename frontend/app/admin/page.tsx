@@ -85,7 +85,7 @@ export default function AdminDashboard() {
   }, [crisis]);
 
   const guestUrl = typeof window !== 'undefined' 
-    ? `${window.location.origin}/guest?room=204` 
+    ? `${window.location.origin}/guest` 
     : '';
   const helpList = Object.values(guestAcks).filter((a: any) => a.needsHelp);
 

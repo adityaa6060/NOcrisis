@@ -18,6 +18,7 @@ export default function AdminDashboard() {
   const [showTrigger, setShowTrigger] = useState(false);
   const [showQR, setShowQR] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState('');
   const [triggerForm, setTriggerForm] = useState({
     type: 'fire' as CrisisType,
     severity: 4,
@@ -85,7 +86,7 @@ export default function AdminDashboard() {
   }, [crisis]);
 
   const guestUrl = typeof window !== 'undefined' 
-    ? `${window.location.origin}/guest` 
+    ? `${window.location.origin}/guest${selectedRoom ? `?room=${selectedRoom}` : ''}` 
     : '';
   const helpList = Object.values(guestAcks).filter((a: any) => a.needsHelp);
 
@@ -125,12 +126,21 @@ export default function AdminDashboard() {
                 <span>🤖</span> Simulate AI Detection
               </button>
             )}
-            <button
-              onClick={() => setShowQR(true)}
-              className="px-3 py-2 rounded-lg bg-gray-800 text-gray-400 text-xs font-bold border border-gray-700 hover:border-gray-600 transition-all"
-            >
-              📱 QR
-            </button>
+            <div className="flex items-center gap-2">
+              <input 
+                type="text"
+                value={selectedRoom}
+                onChange={(e) => setSelectedRoom(e.target.value.toUpperCase())}
+                placeholder="ROOM #"
+                className="w-20 px-2 py-2 rounded-lg bg-black/20 border border-gray-700 text-[10px] font-bold text-center focus:outline-none focus:border-blue-500 transition-all placeholder:text-gray-700"
+              />
+              <button
+                onClick={() => setShowQR(true)}
+                className="px-3 py-2 rounded-lg bg-gray-800 text-gray-400 text-xs font-bold border border-gray-700 hover:border-gray-600 transition-all flex items-center gap-2"
+              >
+                📱 QR
+              </button>
+            </div>
           </div>
         </div>
       </header>

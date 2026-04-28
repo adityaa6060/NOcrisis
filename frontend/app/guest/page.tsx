@@ -102,16 +102,13 @@ function GuestContent() {
             <div className="space-y-6">
                <div>
                   <label className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] mb-3 block text-left">Your Room Number</label>
-                  <select 
+                  <input 
+                    type="text"
                     value={roomNumber}
-                    onChange={(e) => setRoomNumber(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-xl font-bold focus:outline-none focus:border-blue-500 transition-all text-center appearance-none cursor-pointer"
-                  >
-                    <option value="" disabled className="bg-gray-900 text-gray-500">Select your room...</option>
-                    {getAvailableRooms().map(room => (
-                      <option key={room} value={room} className="bg-gray-900 text-white">Room {room}</option>
-                    ))}
-                  </select>
+                    onChange={(e) => setRoomNumber(e.target.value.toUpperCase())}
+                    placeholder="e.g. 204"
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-xl font-bold focus:outline-none focus:border-blue-500 transition-all text-center placeholder:text-gray-700"
+                  />
                </div>
 
                <button 

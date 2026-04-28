@@ -1,10 +1,12 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { useCrisisState } from '@frontend/hooks/useCrisisState';
 
 export default function DevLab() {
   const { isActive } = useCrisisState();
+  const [labRoom, setLabRoom] = useState('101');
 
   return (
     <div className={`min-h-screen bg-black text-white flex flex-col`}>
@@ -49,11 +51,18 @@ export default function DevLab() {
 
         {/* Guest Frame */}
         <div className="flex flex-col">
-          <div className="p-2 bg-blue-500/10 text-blue-400 text-[10px] font-black uppercase tracking-widest border-b border-blue-500/20">
-            Guest View (Room 204)
+          <div className="p-2 bg-blue-500/10 text-blue-400 text-[10px] font-black uppercase tracking-widest border-b border-blue-500/20 flex items-center justify-between">
+            <span>Guest View (Room {labRoom})</span>
+            <input 
+              type="text"
+              value={labRoom}
+              onChange={(e) => setLabRoom(e.target.value.toUpperCase())}
+              className="bg-black/40 border border-blue-500/30 rounded px-2 py-0.5 text-[8px] w-12 focus:outline-none focus:border-blue-500"
+              placeholder="ROOM"
+            />
           </div>
           <iframe 
-            src="/guest?room=204" 
+            src={`/guest?room=${labRoom}`} 
             className="flex-1 w-full border-none pointer-events-auto"
           />
         </div>

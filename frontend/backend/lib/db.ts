@@ -120,6 +120,18 @@ export async function guestNeedsHelp(crisisId: string, roomNumber: string) {
   });
 }
 
+export async function verifyGuestSafe(crisisId: string, roomNumber: string, staffName: string) {
+  const guestRef = ref(database, `activeCrisis/guestAcknowledgments/${roomNumber}`);
+  await update(guestRef, { needsHelp: false, verifiedSafeBy: staffName, verifiedSafeAt: Date.now() });
+
+  await addEventLog(crisisId, {
+    message: `🛡️ Room ${roomNumber} verified SAFE by ${staffName}`,
+    author: staffName,
+    role: 'staff',
+    timestamp: Date.now(),
+  });
+}
+
 export function subscribeToGuestAcks(callback: (acks: Record<string, any>) => void) {
   const acksRef = ref(database, 'activeCrisis/guestAcknowledgments');
   const handler = onValue(acksRef, (snapshot) => {

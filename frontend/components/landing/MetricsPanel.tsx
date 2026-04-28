@@ -3,13 +3,13 @@
 import { useCrisisState } from '@frontend/hooks/useCrisisState';
 
 export default function MetricsPanel() {
-  const { respondingCount, acksCount } = useCrisisState();
-
+  const { respondingCount, acksCount, helpRequests } = useCrisisState();
+  
   const metrics = [
     { label: 'Active Staff Responding', value: respondingCount, icon: '👷', color: 'text-teal-400' },
     { label: 'Verified Safe Guests', value: acksCount, icon: '🛡️', color: 'text-blue-400' },
+    { label: 'Guests in Danger', value: helpRequests, icon: '🆘', color: helpRequests > 0 ? 'text-red-500 animate-pulse' : 'text-gray-500' },
     { label: 'Response Time', value: '< 1s', icon: '⚡', color: 'text-orange-400' },
-    { label: 'Sync Speed', value: '< 100ms', icon: '📡', color: 'text-purple-400' },
   ];
 
   return (

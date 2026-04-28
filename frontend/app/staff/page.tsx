@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useCrisisState } from '@frontend/hooks/useCrisisState';
-import { staffCheckIn, addEventLog } from '@backend/lib/db';
+import { staffCheckIn, addEventLog, verifyGuestSafe } from '@backend/lib/db';
 import { CRISIS_META } from '@backend/types';
 import CrisisAlertBanner from '@frontend/components/shared/CrisisAlertBanner';
 import ActionChecklist from '@frontend/components/shared/ActionChecklist';
@@ -12,7 +12,7 @@ import EventTimeline from '@frontend/components/shared/EventTimeline';
 import { hotelConfig } from '@backend/lib/hotelConfig';
 
 export default function StaffInterface() {
-  const { crisis, isActive, eventLog, respondingStaff, respondingCount, systemSettings, loading } = useCrisisState();
+  const { crisis, isActive, eventLog, respondingStaff, respondingCount, guestAcks, systemSettings, loading } = useCrisisState();
   const [selectedStaff, setSelectedStaff] = useState<any>(null);
   const [hasChosenProfile, setHasChosenProfile] = useState(false);
   const [hasCheckedIn, setHasCheckedIn] = useState(false);
@@ -40,16 +40,30 @@ export default function StaffInterface() {
 
   const handleTaskComplete = async (index: number) => {
     if (!crisis) return;
-    const action = crisis.instructions?.staff?.[index];
+    const action = allStaffActions[index];
     if (action) {
-      await addEventLog(crisis.id, {
-        message: `✅ ${selectedStaff.name} completed: "${action}"`,
-        author: selectedStaff.name,
-        role: 'staff',
-        timestamp: Date.now(),
-      });
+      // If this was a "Go to Room" action, mark the guest as safe
+      const roomMatch = action.match(/GO TO ROOM (\w+) IMMEDIATELY/);
+      if (roomMatch && roomMatch[1]) {
+        await verifyGuestSafe(crisis.id, roomMatch[1], selectedStaff.name);
+      } else {
+        await addEventLog(crisis.id, {
+          message: `✅ ${selectedStaff.name} completed: "${action}"`,
+          author: selectedStaff.name,
+          role: 'staff',
+          timestamp: Date.now(),
+        });
+      }
     }
   };
+
+  const dangerRooms = Object.values(guestAcks)
+    .filter((a: any) => a.needsHelp)
+    .map((a: any) => a.room);
+
+  const emergencyActions = dangerRooms.map(room => `🚨 GO TO ROOM ${room} IMMEDIATELY`);
+  const baseActions = crisis?.instructions?.staff || [];
+  const allStaffActions = [...emergencyActions, ...baseActions];
 
   const meta = crisis ? CRISIS_META[crisis.type] : null;
 
@@ -239,9 +253,9 @@ export default function StaffInterface() {
             {/* Tab Content */}
             {activeTab === 'actions' && (
               <div>
-                {crisis.instructions?.staff ? (
+                {allStaffActions.length > 0 ? (
                   <ActionChecklist
-                    actions={crisis.instructions.staff}
+                    actions={allStaffActions}
                     color="#4ECDC4"
                     label="Your Response Actions"
                     onComplete={handleTaskComplete}

@@ -20,15 +20,19 @@ function GuestContent() {
   useEffect(() => {
     if (coreLoading) return;
     
+    // If no room is set, we MUST be in identity step
     if (!roomNumber) {
       setStep('set-identity');
       return;
     }
 
-    if (isActive && crisis) {
-      setStep(prev => (prev === 'loading' || prev === 'safe' || prev === 'set-identity') ? 'alert' : prev);
-    } else {
-      setStep('safe');
+    // Only auto-transition if we are already "in" the portal
+    if (step !== 'set-identity' && step !== 'loading') {
+      if (isActive && crisis) {
+        setStep(prev => (prev === 'safe') ? 'alert' : prev);
+      } else {
+        setStep('safe');
+      }
     }
   }, [isActive, crisis?.id, roomNumber, coreLoading]);
 
@@ -216,12 +220,11 @@ function GuestContent() {
         <ThemeToggle />
       </div>
 
-      {/* Pulsing alert header */}
       {meta && (
         <div className="px-4 py-4 text-center siren-pulse"
           style={{ background: `${meta.color}15`, borderBottom: `2px solid ${meta.color}` }}>
           <p className="text-xs font-black tracking-[0.3em]" style={{ color: meta.color }}>
-            ⚠ {t.emergencyAlert} — {t.room}
+            ⚠ {t.emergencyAlert}
           </p>
         </div>
       )}

@@ -34,7 +34,7 @@ function GuestContent() {
         setStep('safe');
       }
     }
-  }, [isActive, crisis?.id, roomNumber, coreLoading]);
+  }, [isActive, crisis?.id, roomNumber, coreLoading, step]);
 
   const handleAcknowledge = async () => {
     if (!crisis) return;

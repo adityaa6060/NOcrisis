@@ -141,26 +141,12 @@ export default function Home() {
                 <Link href="/staff" className="px-8 py-4 rounded-2xl border border-[var(--card-border)] font-black hover:bg-white/5 transition-all text-[var(--app-text)]">
                   👷 STAFF
                 </Link>
-                <div className="flex items-center gap-2">
-                  <div className="relative group">
-                    <input 
-                      type="text"
-                      value={selectedRoom}
-                      onChange={(e) => setSelectedRoom(e.target.value.toUpperCase())}
-                      placeholder="ROOM #"
-                      className="w-24 px-4 py-4 rounded-2xl bg-white/5 border border-white/10 text-xs font-bold text-center focus:outline-none focus:border-blue-500 transition-all placeholder:text-gray-700"
-                    />
-                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-black/80 text-[8px] font-bold text-blue-400 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap border border-blue-500/30">
-                      SET QR ROOM
-                    </div>
-                  </div>
-                  <button 
-                    onClick={() => setQRModalOpen(true)}
-                    className="px-8 py-4 rounded-2xl bg-blue-500/10 border border-blue-500/30 text-blue-400 font-black hover:bg-blue-500/20 transition-all flex items-center gap-2"
-                  >
-                    📱 GUEST QR
-                  </button>
-                </div>
+                <button 
+                  onClick={() => setQRModalOpen(true)}
+                  className="px-8 py-4 rounded-2xl bg-blue-500/10 border border-blue-500/30 text-blue-400 font-black hover:bg-blue-500/20 transition-all flex items-center gap-2"
+                >
+                  📱 GUEST QR
+                </button>
               </>
             )}
           </div>

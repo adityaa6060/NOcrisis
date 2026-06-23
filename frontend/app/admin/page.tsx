@@ -28,33 +28,39 @@ export default function AdminDashboard() {
 
   // Trigger Crisis
   const handleTriggerCrisis = useCallback(async (form: typeof triggerForm) => {
-    const id = await triggerCrisis({
-      type: form.type,
-      severity: form.severity,
-      location: form.location,
-      description: form.description || `${CRISIS_META[form.type].label} emergency reported at ${form.location}`,
-      status: 'active',
-      timestamp: Date.now(),
-      triggeredBy: 'Admin',
-      instructions: null,
-    });
-    setShowTrigger(false);
-
-    // Auto-generate AI instructions
-    setAiLoading(true);
     try {
-      const res = await fetch('/api/ai-instructions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+      const id = await triggerCrisis({
+        type: form.type,
+        severity: form.severity,
+        location: form.location,
+        description: form.description || `${CRISIS_META[form.type].label} emergency reported at ${form.location}`,
+        status: 'active',
+        timestamp: Date.now(),
+        triggeredBy: 'Admin',
+        instructions: null,
       });
-      const instructions = await res.json();
-      if (instructions.staff && instructions.guests) {
-        await setCrisisInstructions(id, instructions);
+      setShowTrigger(false);
+
+      // Auto-generate AI instructions
+      setAiLoading(true);
+      try {
+        const res = await fetch('/api/ai-instructions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(form),
+        });
+        const instructions = await res.json();
+        if (instructions.staff && instructions.guests) {
+          await setCrisisInstructions(id, instructions);
+        }
+      } catch (e) {
+        console.error('AI generation failed:', e);
+      } finally {
+        setAiLoading(false);
       }
-    } catch (e) {
-      console.error('AI generation failed:', e);
-    } finally {
+    } catch (err: any) {
+      console.error('Trigger crisis failed:', err);
+      alert(`Failed to activate crisis: ${err.message || 'Permission denied'}. Please check your Firebase rules.`);
       setAiLoading(false);
     }
   }, []);
@@ -62,8 +68,13 @@ export default function AdminDashboard() {
   // Reset System
   const handleHardReset = async () => {
     if (confirm('DANGER: This will wipe all current crisis data and hotel configuration. Proceed?')) {
-       await resetSystemState();
-       window.location.href = '/';
+       try {
+         await resetSystemState();
+         window.location.href = '/';
+       } catch (err: any) {
+         console.error('Reset failed:', err);
+         alert(`Reset failed: ${err.message || 'Permission denied'}.`);
+       }
     }
   };
 
@@ -82,7 +93,12 @@ export default function AdminDashboard() {
   // Resolve Crisis
   const handleResolveCrisis = useCallback(async () => {
     if (!crisis) return;
-    await resolveCrisis(crisis.id);
+    try {
+      await resolveCrisis(crisis.id);
+    } catch (err: any) {
+      console.error('Resolve crisis failed:', err);
+      alert(`Failed to resolve crisis: ${err.message || 'Permission denied'}.`);
+    }
   }, [crisis]);
 
   const guestUrl = typeof window !== 'undefined' 

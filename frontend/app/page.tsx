@@ -26,17 +26,17 @@ export default function Home() {
 
   const handleSimulateDetection = useCallback(async () => {
     setIsSimulating(true);
-    const smartCrisis = generateSmartCrisis();
-
-    const id = await triggerCrisis({
-      ...smartCrisis,
-      status: 'active',
-      timestamp: Date.now(),
-      triggeredBy: 'SYSTEM (AI)',
-      instructions: null,
-    });
-
     try {
+      const smartCrisis = generateSmartCrisis();
+
+      const id = await triggerCrisis({
+        ...smartCrisis,
+        status: 'active',
+        timestamp: Date.now(),
+        triggeredBy: 'SYSTEM (AI)',
+        instructions: null,
+      });
+
       const res = await fetch('/api/ai-instructions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -46,8 +46,9 @@ export default function Home() {
       if (instructions.staff) {
         await setCrisisInstructions(id, instructions);
       }
-    } catch (e) {
-      console.error('AI Instructions failed:', e);
+    } catch (e: any) {
+      console.error('AI Instructions / triggering failed:', e);
+      alert(`Simulation failed: ${e.message || 'Permission denied'}. Please check your Firebase rules.`);
     } finally {
       setIsSimulating(false);
     }
@@ -64,19 +65,30 @@ export default function Home() {
   const handleInitialize = async () => {
     if (!setupHotelName.trim()) return;
     setIsInitializing(true);
-    const locations = setupLocations.split(',').map(l => l.trim()).filter(l => l);
-    await updateSystemSettings({ 
-      hotelName: setupHotelName.trim(),
-      locations: locations.length > 0 ? locations : hotelConfig.locations 
-    });
-    setIsInitializing(false);
-    setShowSetup(false);
+    try {
+      const locations = setupLocations.split(',').map(l => l.trim()).filter(l => l);
+      await updateSystemSettings({ 
+        hotelName: setupHotelName.trim(),
+        locations: locations.length > 0 ? locations : hotelConfig.locations 
+      });
+      setShowSetup(false);
+    } catch (err: any) {
+      console.error('Initialization failed:', err);
+      alert(`Failed to initialize system: ${err.message || 'Permission denied'}. Please verify your Firebase rules (make sure public read/write is enabled in test/demo mode).`);
+    } finally {
+      setIsInitializing(false);
+    }
   };
 
   const handleHardReset = async () => {
     if (confirm('DANGER: This will wipe all system data. Proceed?')) {
-      await resetSystemState();
-      window.location.reload();
+      try {
+        await resetSystemState();
+        window.location.reload();
+      } catch (err: any) {
+        console.error('Hard reset failed:', err);
+        alert(`Reset failed: ${err.message || 'Permission denied'}.`);
+      }
     }
   };
 

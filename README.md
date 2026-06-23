@@ -1,4 +1,4 @@
-# CrisisSync — Real-time Hotel Crisis Coordination
+# NOcrisis — Real-time Hotel Crisis Coordination
 
 A production-quality hackathon MVP that connects Admin, Staff, and Guests during emergencies via real-time Firebase sync and Gemini AI-generated instructions.
 

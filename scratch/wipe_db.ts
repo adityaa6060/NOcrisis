@@ -1,4 +1,4 @@
-import { resetSystemState } from '../backend/lib/db';
+import { resetSystemState } from '../frontend/backend/lib/db';
 
 async function run() {
     console.log('⏳ Starting database wipe...');

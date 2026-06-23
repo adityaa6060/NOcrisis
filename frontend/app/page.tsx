@@ -12,7 +12,7 @@ import QRModal from '@frontend/components/landing/QRModal';
 import ThemeToggle from '@frontend/components/shared/ThemeToggle';
 
 export default function Home() {
-  const { crisis, isActive, systemSettings, loading } = useCrisisState();
+  const { crisis, isActive, systemSettings, loading, dbError } = useCrisisState();
   const [isQRModalOpen, setQRModalOpen] = useState(false);
   const [isSimulating, setIsSimulating] = useState(false);
   const [setupHotelName, setSetupHotelName] = useState('');
@@ -93,6 +93,18 @@ export default function Home() {
   return (
     <div className={`min-h-screen transition-colors duration-1000 ${isActive ? 'crisis-active-bg' : 'bg-[var(--app-bg)]'} text-[var(--app-text)] overflow-x-hidden`}>
       
+      {dbError && (
+        <div className="max-w-7xl mx-auto px-6 pt-4 relative z-30">
+          <div className="bg-red-500/10 border-2 border-red-500/30 text-red-400 p-4 rounded-2xl backdrop-blur-md flex items-center gap-3 text-sm font-semibold shadow-lg shadow-red-500/5 animate-pulse">
+            <span className="text-xl">⚠️</span>
+            <div>
+              <p className="font-bold uppercase tracking-wider text-xs text-red-500">Firebase System Alert</p>
+              <p className="text-xs opacity-80 mt-0.5">Connection failed: {dbError}. Please verify your .env.local variables and Firebase security rules.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Navigation */}
       <nav className="max-w-7xl mx-auto px-6 py-8 flex justify-between items-center relative z-20">
         <div className="flex items-center gap-3">

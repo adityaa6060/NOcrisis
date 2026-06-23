@@ -17,16 +17,23 @@ export function useCrisisState() {
   const [guestAcks, setGuestAcks] = useState<Record<string, any>>({});
   const [systemSettings, setSystemSettings] = useState<{ hotelName: string } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [dbError, setDbError] = useState<string | null>(null);
 
   useEffect(() => {
+    const handleError = (err: Error) => {
+      console.error('Firebase subscription failed:', err);
+      setDbError(err.message || 'Permission denied or connection failed');
+      setLoading(false);
+    };
+
     const unsub1 = subscribeToActiveCrisis((c) => {
       setCrisis(c);
       setLoading(false);
-    });
-    const unsub2 = subscribeToEventLog(setEventLog);
-    const unsub3 = subscribeToRespondingStaff(setRespondingStaff);
-    const unsub4 = subscribeToGuestAcks(setGuestAcks);
-    const unsub5 = subscribeToSystemSettings(setSystemSettings);
+    }, handleError);
+    const unsub2 = subscribeToEventLog(setEventLog, handleError);
+    const unsub3 = subscribeToRespondingStaff(setRespondingStaff, handleError);
+    const unsub4 = subscribeToGuestAcks(setGuestAcks, handleError);
+    const unsub5 = subscribeToSystemSettings(setSystemSettings, handleError);
 
     return () => {
       unsub1();
@@ -53,5 +60,6 @@ export function useCrisisState() {
     respondingCount,
     acksCount,
     helpRequests,
+    dbError,
   };
 }

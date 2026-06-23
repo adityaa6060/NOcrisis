@@ -13,7 +13,7 @@ function GuestContent() {
   const searchParams = useSearchParams();
   const initialRoom = searchParams.get('room');
   const [roomNumber, setRoomNumber] = useState(initialRoom || '');
-  const { crisis, isActive, systemSettings, loading: coreLoading } = useCrisisState();
+  const { crisis, isActive, systemSettings, loading: coreLoading, dbError } = useCrisisState();
   const [step, setStep] = useState<'loading' | 'set-identity' | 'safe' | 'alert' | 'acknowledged' | 'help-sent'>('loading');
   const [lang, setLang] = useState<'en' | 'hi'>('en');
 
@@ -97,6 +97,18 @@ function GuestContent() {
     return (
       <div className="min-h-screen bg-transparent flex flex-col items-center justify-center p-6 text-center">
          <div className="max-w-xs w-full">
+          {dbError && (
+            <div className="mb-6">
+              <div className="bg-red-500/10 border-2 border-red-500/30 text-red-400 p-4 rounded-2xl backdrop-blur-md flex items-center gap-3 text-xs font-semibold shadow-lg shadow-red-500/5 animate-pulse text-left">
+                <span className="text-lg">⚠️</span>
+                <div>
+                  <p className="font-bold uppercase tracking-wider text-[10px] text-red-500">Firebase System Alert</p>
+                  <p className="opacity-85 mt-0.5">Connection failed: {dbError}. Check .env.local and Firebase rules.</p>
+                </div>
+              </div>
+            </div>
+          )}
+
             <div className="w-16 h-16 rounded-2xl bg-blue-500/20 text-blue-400 border border-blue-500/30 flex items-center justify-center text-3xl mb-8 mx-auto shadow-2xl">
               🏨
             </div>
@@ -141,6 +153,18 @@ function GuestContent() {
             </button>
           ))}
         </div>
+
+        {dbError && (
+          <div className="mb-6 max-w-xs w-full">
+            <div className="bg-red-500/10 border-2 border-red-500/30 text-red-400 p-4 rounded-2xl backdrop-blur-md flex items-center gap-3 text-xs font-semibold shadow-lg shadow-red-500/5 animate-pulse text-left">
+              <span className="text-lg">⚠️</span>
+              <div>
+                <p className="font-bold uppercase tracking-wider text-[10px] text-red-500">Firebase System Alert</p>
+                <p className="opacity-85 mt-0.5">Connection failed: {dbError}. Check .env.local and Firebase rules.</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="text-7xl mb-4">✅</div>
         <h1 className="text-3xl font-black text-white mb-2">{t.safe}</h1>
@@ -230,6 +254,18 @@ function GuestContent() {
       )}
 
       <div className="flex-1 p-5 max-w-sm mx-auto w-full flex flex-col">
+
+        {dbError && (
+          <div className="mb-4">
+            <div className="bg-red-500/10 border-2 border-red-500/30 text-red-400 p-4 rounded-2xl backdrop-blur-md flex items-center gap-3 text-xs font-semibold shadow-lg shadow-red-500/5 animate-pulse text-left">
+              <span className="text-lg">⚠️</span>
+              <div>
+                <p className="font-bold uppercase tracking-wider text-[10px] text-red-500">Firebase System Alert</p>
+                <p className="opacity-85 mt-0.5">Connection failed: {dbError}. Check .env.local and Firebase rules.</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {step === 'alert' && meta && crisis && (
           <div className="flex-1 flex flex-col justify-center py-4">

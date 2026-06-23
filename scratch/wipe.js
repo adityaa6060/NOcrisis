@@ -1,4 +1,4 @@
-const { resetSystemState } = require('../backend/lib/db');
+const { resetSystemState } = require('../frontend/backend/lib/db');
 resetSystemState().then(() => {
     console.log('✅ DATABASE WIPED SUCCESSFULLY');
     process.exit(0);

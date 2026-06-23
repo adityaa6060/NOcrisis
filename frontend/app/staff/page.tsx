@@ -12,7 +12,7 @@ import EventTimeline from '@frontend/components/shared/EventTimeline';
 import { hotelConfig } from '@backend/lib/hotelConfig';
 
 export default function StaffInterface() {
-  const { crisis, isActive, eventLog, respondingStaff, respondingCount, guestAcks, systemSettings, loading } = useCrisisState();
+  const { crisis, isActive, eventLog, respondingStaff, respondingCount, guestAcks, systemSettings, loading, dbError } = useCrisisState();
   const [selectedStaff, setSelectedStaff] = useState<any>(null);
   const [hasChosenProfile, setHasChosenProfile] = useState(false);
   const [hasCheckedIn, setHasCheckedIn] = useState(false);
@@ -76,6 +76,18 @@ export default function StaffInterface() {
     return (
       <div className="min-h-screen bg-transparent text-[var(--app-text)] flex flex-col items-center justify-center p-6 bg-grid-pattern">
         <div className="max-w-md w-full">
+          {dbError && (
+            <div className="mb-6">
+              <div className="bg-red-500/10 border-2 border-red-500/30 text-red-400 p-4 rounded-2xl backdrop-blur-md flex items-center gap-3 text-xs font-semibold shadow-lg shadow-red-500/5 animate-pulse text-left">
+                <span className="text-lg">⚠️</span>
+                <div>
+                  <p className="font-bold uppercase tracking-wider text-[10px] text-red-500">Firebase System Alert</p>
+                  <p className="opacity-85 mt-0.5">Connection failed: {dbError}. Check .env.local and Firebase rules.</p>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="text-center mb-12">
             <h1 className="text-4xl font-black mb-2 tracking-tighter">STAFF IDENTIFICATION</h1>
             <p className="text-xs text-gray-400 uppercase tracking-widest font-bold">Sign in to your emergency post at {hotelDisplayName}</p>
@@ -150,6 +162,18 @@ export default function StaffInterface() {
           </div>
         </div>
       </header>
+
+      {dbError && (
+        <div className="p-4 max-w-lg mx-auto">
+          <div className="bg-red-500/10 border-2 border-red-500/30 text-red-400 p-4 rounded-2xl backdrop-blur-md flex items-center gap-3 text-xs font-semibold shadow-lg shadow-red-500/5 animate-pulse">
+            <span className="text-lg">⚠️</span>
+            <div>
+              <p className="font-bold uppercase tracking-wider text-[10px] text-red-500">Firebase System Alert</p>
+              <p className="opacity-85 mt-0.5">Connection failed: {dbError}. Check .env.local and Firebase rules.</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="p-4 max-w-lg mx-auto">
 

@@ -4,12 +4,15 @@ import type { Crisis, CrisisInstructions, EventLogEntry } from '@backend/types';
 
 // ─── Crisis Operations ────────────────────────────────────────────────────────
 
-export function subscribeToActiveCrisis(callback: (crisis: Crisis | null) => void) {
+export function subscribeToActiveCrisis(callback: (crisis: Crisis | null) => void, onError?: (error: Error) => void) {
   const crisisRef = ref(database, 'activeCrisis');
   const handler = onValue(crisisRef, (snapshot) => {
     const data = snapshot.val();
     if (!data || data.status === 'idle') return callback(null);
     callback(data as Crisis);
+  }, (err) => {
+    console.error("Firebase error in subscribeToActiveCrisis:", err);
+    if (onError) onError(err);
   });
   return () => off(crisisRef, 'value', handler);
 }
@@ -86,10 +89,13 @@ export async function staffCheckIn(crisisId: string, staffId: string, staffName:
   });
 }
 
-export function subscribeToRespondingStaff(callback: (staff: Record<string, { name: string; checkedInAt: number }>) => void) {
+export function subscribeToRespondingStaff(callback: (staff: Record<string, { name: string; checkedInAt: number }>) => void, onError?: (error: Error) => void) {
   const staffRef = ref(database, 'activeCrisis/respondingStaff');
   const handler = onValue(staffRef, (snapshot) => {
     callback(snapshot.val() || {});
+  }, (err) => {
+    console.error("Firebase error in subscribeToRespondingStaff:", err);
+    if (onError) onError(err);
   });
   return () => off(staffRef, 'value', handler);
 }
@@ -132,10 +138,13 @@ export async function verifyGuestSafe(crisisId: string, roomNumber: string, staf
   });
 }
 
-export function subscribeToGuestAcks(callback: (acks: Record<string, any>) => void) {
+export function subscribeToGuestAcks(callback: (acks: Record<string, any>) => void, onError?: (error: Error) => void) {
   const acksRef = ref(database, 'activeCrisis/guestAcknowledgments');
   const handler = onValue(acksRef, (snapshot) => {
     callback(snapshot.val() || {});
+  }, (err) => {
+    console.error("Firebase error in subscribeToGuestAcks:", err);
+    if (onError) onError(err);
   });
   return () => off(acksRef, 'value', handler);
 }
@@ -154,7 +163,7 @@ export async function addEventLog(crisisId: string, entry: EventLogEntry) {
   await set(histRef, { ...entry, id: histRef.key });
 }
 
-export function subscribeToEventLog(callback: (entries: EventLogEntry[]) => void) {
+export function subscribeToEventLog(callback: (entries: EventLogEntry[]) => void, onError?: (error: Error) => void) {
   const logRef = ref(database, 'activeCrisis/eventLog');
   const handler = onValue(logRef, (snapshot) => {
     const data = snapshot.val();
@@ -162,13 +171,16 @@ export function subscribeToEventLog(callback: (entries: EventLogEntry[]) => void
     const entries = Object.values(data) as EventLogEntry[];
     entries.sort((a, b) => b.timestamp - a.timestamp);
     callback(entries);
+  }, (err) => {
+    console.error("Firebase error in subscribeToEventLog:", err);
+    if (onError) onError(err);
   });
   return () => off(logRef, 'value', handler);
 }
 
 // ─── Crisis History ───────────────────────────────────────────────────────────
 
-export function subscribeToCrisisHistory(callback: (crises: Crisis[]) => void) {
+export function subscribeToCrisisHistory(callback: (crises: Crisis[]) => void, onError?: (error: Error) => void) {
   const historyRef = ref(database, 'crisisHistory');
   const handler = onValue(historyRef, (snapshot) => {
     const data = snapshot.val();
@@ -176,6 +188,9 @@ export function subscribeToCrisisHistory(callback: (crises: Crisis[]) => void) {
     const crises = Object.values(data) as Crisis[];
     crises.sort((a, b) => b.timestamp - a.timestamp);
     callback(crises);
+  }, (err) => {
+    console.error("Firebase error in subscribeToCrisisHistory:", err);
+    if (onError) onError(err);
   });
   return () => off(historyRef, 'value', handler);
 }
@@ -197,10 +212,13 @@ export async function resetSystemState() {
   await set(ref(database, 'crisisHistory'), null);
 }
 
-export function subscribeToSystemSettings(callback: (s: any) => void) {
+export function subscribeToSystemSettings(callback: (s: any) => void, onError?: (error: Error) => void) {
   const sRef = ref(database, 'systemSettings');
   const handler = onValue(sRef, (snapshot) => {
     callback(snapshot.val());
+  }, (err) => {
+    console.error("Firebase error in subscribeToSystemSettings:", err);
+    if (onError) onError(err);
   });
   return () => off(sRef, 'value', handler);
 }

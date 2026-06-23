@@ -13,7 +13,7 @@ import ActionChecklist from '@frontend/components/shared/ActionChecklist';
 import QRCode from 'react-qr-code';
 
 export default function AdminDashboard() {
-  const { crisis, isActive, eventLog, respondingStaff, guestAcks, respondingCount, acksCount, helpRequests, systemSettings } = useCrisisState();
+  const { crisis, isActive, eventLog, respondingStaff, guestAcks, respondingCount, acksCount, helpRequests, systemSettings, dbError } = useCrisisState();
 
   const [showTrigger, setShowTrigger] = useState(false);
   const [showQR, setShowQR] = useState(false);
@@ -135,6 +135,18 @@ export default function AdminDashboard() {
           </div>
         </div>
       </header>
+      
+      {dbError && (
+        <div className="max-w-7xl mx-auto px-6 mt-6">
+          <div className="bg-red-500/10 border-2 border-red-500/30 text-red-400 p-4 rounded-2xl backdrop-blur-md flex items-center gap-3 text-sm font-semibold shadow-lg shadow-red-500/5 animate-pulse">
+            <span className="text-xl">⚠️</span>
+            <div>
+              <p className="font-bold uppercase tracking-wider text-xs text-red-500">Firebase System Alert</p>
+              <p className="text-xs opacity-80 mt-0.5">Connection failed: {dbError}. Please verify your .env.local variables and Firebase security rules.</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="p-6">
         <div className="max-w-7xl mx-auto">

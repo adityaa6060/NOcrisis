@@ -39,3 +39,6 @@ yarn-error.log*
 out/
 build/
 node_modules/
+
+# TypeScript build info
+tsconfig.tsbuildinfo

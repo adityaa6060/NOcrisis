@@ -90,4 +90,4 @@ npm run dev
 
 ## Crisis Types Supported
 
-🔥 Fire · 🚑 Medical · 🚨 Security · 🌊 Flood · ⚡ Earthquake · 💡 Power Outage · 🚪 Evacuation
+🔥 Fire · 🚑 Medical · 🚨 Security · 
